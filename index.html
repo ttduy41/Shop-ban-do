@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop vinhmoddz - Siêu Update</title>
+    <style>
+        /* 1. HỆ THỐNG MÀU SẮC BIẾN THỂ */
+        :root {
+            --bg-color: #f0f2f5;
+            --text-color: #1c1e21;
+            --card-bg: #ffffff;
+            --menu-bg: #ffffff;
+            --balance-bg: #2d3436;
+            --accent: #27ae60;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #18191a;
+            --text-color: #e4e6eb;
+            --card-bg: #242526;
+            --menu-bg: #242526;
+            --balance-bg: #000000;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            transition: 0.3s;
+        }
+
+        /* 2. HEADER & THANH SỐ DƯ */
+        #header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 60px;
+            background: var(--card-bg);
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        #balanceHeader {
+            margin-left: 15px;
+            background: var(--balance-bg);
+            color: #00ff00;
+            padding: 6px 15px;
+            border-radius: 20px;
+            border: 1px solid #00ff00;
+            font-weight: bold;
+            font-family: monospace;
+        }
+
+        /* 3. MENU 3 GẠCH & OVERLAY */
+        #sideMenu {
+            position: fixed;
+            top: 0; left: -300px;
+            width: 280px;
+            height: 100%;
+            background: var(--menu-bg);
+            box-shadow: 5px 0 15px rgba(0,0,0,0.3);
+            transition: 0.4s;
+            z-index: 2000;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1500;
+        }
+
+        /* 4. GIAO DIỆN SẢN PHẨM */
+        .content {
+            margin-top: 80px;
+            padding: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .product-card {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 350px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-top: 4px solid var(--accent);
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 6px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        .btn-buy {
+            background: var(--accent);
+            color: white;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* 5. THANH ADMIN */
+        #adminBar {
+            display: none;
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: #e74c3c;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            z-index: 3000;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="header">
+        <div onclick="toggleMenu()" style="font-size: 28px; cursor: pointer;">☰</div>
+        <div id="balanceHeader">Số dư: <span id="moneyDisplay">0</span> VNĐ</div>
+        <button onclick="toggleTheme()" style="margin-left: auto; width: auto; padding: 5px 15px; border-radius: 20px;">Sáng/Tối</button>
+    </div>
+
+    <div id="sideMenu">
+        <h3 style="text-align: center;">QUẢN LÝ</h3>
+        <hr>
+        
+        <div id="authSection">
+            <h4>🔐 Đăng Nhập Admin</h4>
+            <input type="text" id="userIn" placeholder="Tên đăng nhập">
+            <input type="password" id="passIn" placeholder="Mật khẩu">
+            <button class="btn-buy" onclick="handleLogin()">Xác Nhận</button>
+        </div>
+
+        <h4>💳 Nạp Thẻ Cào</h4>
+        <select id="cardType">
+            <option>Viettel</option>
+            <option>Mobifone</option>
+            <option>Vinaphone</option>
+            <option>Zing</option>
+        </select>
+        <input type="text" id="cardCode" placeholder="Mã thẻ">
+        <input type="text" id="cardSeri" placeholder="Số seri">
+        <button onclick="topUpAuto()" style="background: #2980b9; color: white; border: none; cursor: pointer; padding: 10px; border-radius: 5px;">Nạp Thẻ</button>
+
+        <h4>📜 Lịch Sử Giao Dịch</h4>
+        <div id="historyBox" style="font-size: 12px; background: rgba(0,0,0,0.05); padding: 5px; border-radius: 5px; max-height: 200px; overflow-y: auto;">
+            Chưa có hoạt động.
+        </div>
+        
+        <button class="btn-buy" style="background: #555; margin-top: 20px;" onclick="toggleMenu()">Đóng Menu</button>
+    </div>
+
+    <div id="overlay" onclick="toggleMenu()"></div>
+
+    <div class="content" id="mainStore">
+        </div>
+
+    <div id="adminBar">
+        <b>SẾP VINHMODDZ ONLINE</b> | 
+        Sửa hàng: <select id="admSelect" style="width: auto; padding: 2px;"></select>
+        Kho: <input type="number" id="admNewQty" style="width: 60px; padding: 2px;">
+        <button onclick="adminSetStock()" style="width: auto; padding: 2px; background: white; color: black; border: none; cursor: pointer;">Lưu</button> |
+        <button onclick="balance += 500000; updateUI();" style="width: auto; padding: 2px; background: gold; color: black; border: none; cursor: pointer;">+500k</button>
+    </div>
+
+    <script>
+        // --- DỮ LIỆU CƠ SỞ ---
+        let balance = 0;
+        let usedCardCodes = []; // Chống nạp trùng mã thẻ
+        let products = [
+            { id: 0, name: "Itachi Ping V3", stock: 50, sold: 0, prices: { "1day": 10000, "7day": 50000, "30day": 150000, "vinhvien": 500000 } },
+            { id: 1, name: "Hopper Plus", stock: 30, sold: 0, prices: { "1day": 15000, "7day": 70000, "30day": 200000, "vinhvien": 700000 } },
+            { id: 2, name: "Acc Clone LV 5", stock: 100, sold: 0, prices: { "default": 5000 } }
+        ];
+
+        // --- CẬP NHẬT GIAO DIỆN ---
+        function updateUI() {
+            document.getElementById('moneyDisplay').innerText = balance.toLocaleString('vi-VN');
+            const store = document.getElementById('mainStore');
+            const admSel = document.getElementById('admSelect');
+            store.innerHTML = "";
+            admSel.innerHTML = "";
+
+            products.forEach(p => {
+                let options = "";
+                if(p.id !== 2) {
+                    options = `
+                        <select id="select-${p.id}">
+                            <option value="1day">1 Ngày - ${p.prices['1day'].toLocaleString()}đ</option>
+                            <option value="7day">7 Ngày - ${p.prices['7day'].toLocaleString()}đ</option>
+                            <option value="30day">30 Ngày - ${p.prices['30day'].toLocaleString()}đ</option>
+                            <option value="vinhvien">Vĩnh Viễn - ${p.prices['vinhvien'].toLocaleString()}đ</option>
+                        </select>
+                    `;
+                } else {
+                    options = `<p style="font-weight:bold; color:#e67e22;">Giá: ${p.prices['default'].toLocaleString()} VNĐ</p>`;
+                }
+
+                store.innerHTML += `
+                    <div class="product-card">
+                        <h2 style="margin:0">${p.name}</h2>
+                        <p style="font-size:14px; color:#777;">Tổng: ${p.stock} | Còn lại: <b style="color:green">${p.stock - p.sold}</b></p>
+                        ${options}
+                        <button class="btn-buy" onclick="purchase(${p.id})" ${(p.stock - p.sold <= 0) ? 'disabled' : ''}>
+                            ${(p.stock - p.sold <= 0) ? 'HẾT HÀNG' : 'MUA NGAY'}
+                        </button>
+                    </div>
+                `;
+                admSel.innerHTML += `<option value="${p.id}">${p.name}</option>`;
+            });
+        }
+
+        // --- LOGIC MUA HÀNG ---
+        function purchase(id) {
+            let p = products[id];
+            let cost = 0;
+            let timeTxt = "";
+
+            if(p.id !== 2) {
+                let timeVal = document.getElementById(`select-${p.id}`).value;
+                cost = p.prices[timeVal];
+                timeTxt = ` (${timeVal})`;
+            } else {
+                cost = p.prices['default'];
+            }
+
+            if(balance >= cost) {
+                balance -= cost;
+                p.sold++;
+                alert(`Thanh toán thành công ${p.name}${timeTxt}!`);
+                addHistory(`Mua ${p.name}: -${cost.toLocaleString()}đ`);
+                updateUI();
+            } else {
+                alert("Số dư của bạn không đủ!");
+            }
+        }
+
+        // --- NẠP THẺ TỰ ĐỘNG (CHỐNG TRÙNG) ---
+        function topUpAuto() {
+            const code = document.getElementById('cardCode').value.trim();
+            if(!code) return alert("Vui lòng nhập mã thẻ!");
+
+            if(usedCardCodes.includes(code)) {
+                alert("LỖI: Mã thẻ này đã được sử dụng trước đó!");
+            } else {
+                usedCardCodes.push(code);
+                balance += 50000; // Mặc định cộng 50k mỗi lần nạp (giả lập)
+                alert("Nạp thành công 50.000 VNĐ vào tài khoản!");
+                addHistory(`Nạp thẻ: +50.000đ (Mã: ${code.substring(0,4)}***)`);
+                updateUI();
+            }
+            document.getElementById('cardCode').value = "";
+        }
+
+        // --- QUẢN TRỊ ADMIN vinhmoddz ---
+        function handleLogin() {
+            const u = document.getElementById('userIn').value;
+            const p = document.getElementById('passIn').value;
+            if(u === "vinhmoddz" && p === "vinhmoddz") {
+                document.getElementById('adminBar').style.display = 'block';
+                document.getElementById('authSection').innerHTML = "<h4>✅ ADMIN ONLINE</h4>";
+                alert("Xác nhận Admin vinhmoddz!");
+                toggleMenu();
+            } else {
+                alert("Sai tài khoản hoặc mật khẩu!");
+            }
+        }
+
+        function adminSetStock() {
+            const id = document.getElementById('admSelect').value;
+            const newQty = document.getElementById('admNewQty').value;
+            if(newQty === "") return alert("Nhập số lượng!");
+            products[id].stock = parseInt(newQty);
+            updateUI();
+            alert("Đã cập nhật số lượng kho cho " + products[id].name);
+        }
+
+        // --- TIỆN ÍCH HỆ THỐNG ---
+        function toggleMenu() {
+            const menu = document.getElementById('sideMenu');
+            const overlay = document.getElementById('overlay');
+            if(menu.style.left === '0px') { menu.style.left = '-300px'; overlay.style.display = 'none'; }
+            else { menu.style.left = '0px'; overlay.style.display = 'block'; }
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        }
+
+        function addHistory(msg) {
+            const box = document.getElementById('historyBox');
+            if(box.innerText.includes("Chưa có hoạt động")) box.innerHTML = "";
+            const time = new Date().toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'});
+            box.innerHTML = `<div>[${time}] ${msg}</div>` + box.innerHTML;
+        }
+
+        // KHỞI CHẠY LẦN ĐẦU
+        updateUI();
+    </script>
+</body>
+</html>
